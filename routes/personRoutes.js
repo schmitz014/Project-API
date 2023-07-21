@@ -80,4 +80,24 @@ router.patch('/:id', async (req, res) => {
  }
 });
 
+//Delete
+
+router.delete('/:id', async (req, res) => {
+ const { id } = req.params;
+
+ const person =  await Person.findOne({ _id: id });
+
+ if (!person) {
+  res.status(422).json({ error: 'Person not found!' });
+  return;
+ }
+
+ try {
+  await Person.deleteOne({ _id: id });
+  res.status(422).json({ message: 'Person deleted!' });
+ } catch (error) {
+  res.status(500).json({ error: error.message });
+ }
+});
+
 module.exports = router;
