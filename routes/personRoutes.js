@@ -1,29 +1,59 @@
-//API routes
 const router = require('express').Router();
 const Person = require('../models/Person');
 
-router.use('/', async (req, res) => {
+// Create a new person
+router.post('/', async (req, res) => {
+  const { name, salary, approved } = req.body;
 
- //Creates a new person
+  if (!name) {
+    res.status(422).json({ error: 'Name is required!' });
+    return;
+  }else if (!salary) {
+    res.status(422).json({ error: 'Salary is required!' });
+    return;
+   }else if (!approved){
+    res.status(422).json({ error: 'Approved is required!' });
+    return;
+   }
 
- const {name, salary, approved} = req.body;
+  const person = {
+    name,
+    salary,
+    approved,
+  };
 
- if(!name){
-  res.status(422).json({error: 'Name is required!'});
- }
+  try {
+    await Person.create(person);
+    res.status(201).json({ message: 'Person created!' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
- const person = {
-  name,
-  salary,
-  approved
- }
+// Get all people
+router.get('/', async (req, res) => {
+  try {
+    const people = await Person.find();
+    res.status(200).json({ people });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get a person by ID
+router.get('/:id', async (req, res) => {
+ const { id } = req.params;
 
  try {
-  await Person.create(person);
-  res.status(201).json({message: 'Person created!'});
+  const person = await Person.findOne({_id: id});
+  if(!person){
+   res.status(422).json({ error: 'Person not found!' });
+   return;
+  }
+  res.status(200).json(person);
  } catch (error) {
-  res.status(500).json({message: error.message});
- }}
-);
+  res.status(500).json({ error: error.message });
+ }
+});
 
 module.exports = router;
