@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 
+const Person = require('./models/Person');
+
 // reading JSON configuration / middleware
 app.use(express.urlencoded(
     {extended: true}
