@@ -56,4 +56,28 @@ router.get('/:id', async (req, res) => {
  }
 });
 
+//Update
+router.patch('/:id', async (req, res) => {
+ const { id } = req.params;
+
+ const { name, salary, approved } = req.body;
+
+ const person = {
+  name,
+  salary,
+  approved,
+ }
+
+ try {
+  const updatedPerson = await Person.updateOne({_id: id}, person);
+  if(updatedPerson.matchedCount === 0) {
+   res.status(422).json({ error: 'Could not update person!' });
+   return;
+  }
+  res.status(200).json({ message: 'Person updated!' });
+ } catch (error) {
+  res.status(500).json({ error: error.message });
+ }
+});
+
 module.exports = router;
